@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "attach",
+            "name": "Attach to Swift Executable",
+            "pid": "${command:pickProcess}"
+        }
+
+    ]
+}
