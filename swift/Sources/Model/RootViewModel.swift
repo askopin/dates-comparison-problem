@@ -3,14 +3,14 @@ import Foundation
 class RootViewModel: ObservableObject {
     let dataSourceURL: URL
     var response: EventsResponse?
-    let chainBuilder: ChainBuilder
+    let chainBuilder: NaiveChainBuilder
     let timezones: [UserTimeZone] 
     var currentTimezone: UserTimeZone
 
     @Published private(set) var chains: [EventChain] = []
     @Published private(set) var message: String = "No data"
 
-    init(dataSourceURL: URL, chainBuilder: ChainBuilder = ChainBuilder()) {
+    init(dataSourceURL: URL, chainBuilder: NaiveChainBuilder = NaiveChainBuilder()) {
         self.dataSourceURL = dataSourceURL
         self.chainBuilder = chainBuilder
         let timezones = Array(-12...12).map { UserTimeZone(rawValue: $0) }

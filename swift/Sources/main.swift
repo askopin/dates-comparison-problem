@@ -10,4 +10,4 @@ guard  CommandLine.arguments.count > 1 else {
 let fileName: String = CommandLine.arguments[1]
 let fileUrl = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appending(path: fileName, directoryHint: .notDirectory)
 
-Application(rootView: RootView(viewModel: RootViewModel(dataSourceURL: fileUrl, chainBuilder: ChainBuilder()))).start()
+Application(rootView: RootView(viewModel: RootViewModel(dataSourceURL: fileUrl, chainBuilder: NaiveChainBuilder()))).start()

@@ -1,6 +1,6 @@
 import Foundation
 
-class ChainBuilder {
+class NaiveChainBuilder {
     var calendar = Calendar(identifier: .gregorian)
 
     func process(response: EventsResponse) -> [EventChain] {

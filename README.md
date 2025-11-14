@@ -33,15 +33,29 @@ and the result should have a structure like the following:
 ## Naive solution
 
 The most obvious approach (and also the one suggested by the interviewers) is to use a calendar to compare dates or convert dates to strings omitting the time component and compare the result:
-
 ```
-class ChainBuilder {
-    
-    func process(response: EventsResponse) -> [EventChain] {
-        let calendar = Calendar.current
-        let events = response.events.sorted { $0.start < $1.start }
+struct Event: Decodable, Identifiable, Equatable {
+    let id: Int
+    let start: Date
+    let end: Date
+}
 
-        let chains: [[Event]] = events.reduce(into: []) { chains, event in
+protocol ChainBuilder {
+  func process(events: [Event]) -> [[Event]]
+}
+```
+```
+struct NaiveChainBuilder: ChainBuilder {
+    let calendar: Calendar
+
+    init (calendar: Calendar = Calendar.current){
+        self.calendar = calendar
+    }
+
+    func process(events: [Event]) -> [[Event]] {
+        let sorted_events = events.sorted { $0.start < $1.start }
+
+        return events.reduce(into: []) { chains, event in
             let insertIndex = chains.firstIndex(where: { chain in
                  guard let lastEvent = chain.last else {
                     assertionFailure("empty chains should never exist")
@@ -57,8 +71,6 @@ class ChainBuilder {
                 chains.append([event])
             }
         }
-
-        return chains.map { EventChain(events: $0) }
     }
 }
 ```
@@ -89,7 +101,45 @@ And what if the first event takes place in London but the second one in Wellingt
 ## Conclusion
 
 Like any poorly defined task, this problem lacks a good solution. For me personally, the least frustrating approach is to just chain events if the time between them is within a certain threshold.
-But even calculating the difference could not be as straightforward.
+
+```
+struct IntervalBasedChainBuilder: ChainBuilder {
+    let minChainInterval: TimeInterval
+    let maxChainInterval: TimeInterval
+
+    init (
+        minChainInterval: TimeInterval = 0, 
+        maxChainInterval: TimeInterval = 24 * 60 * 60
+    ){
+        self.minChainInterval = minChainInterval
+        self.maxChainInterval = maxChainInterval
+    }
+
+    func process(response: EventsResponse) -> [EventChain] {
+        let events = response.events.sorted { $0.start < $1.start }
+
+        let chains: [[Event]] = events.reduce(into: []) { chains, event in
+            let insertIndex = chains.firstIndex(where: { chain in
+                 guard let lastEvent = chain.last else {
+                    assertionFailure("empty chains should never exist")
+                    return false
+                }
+
+                let dateDiff = lastEvent.end.distance(to: event.start)
+                return dateDiff >= minChainInterval && dateDiff < maxChainInterval
+            })
+
+            if let insertIndex {
+                chains[insertIndex].append(event)
+            } else {
+                chains.append([event])
+            }
+        }
+
+        return chains.map { EventChain(events: $0) }
+    }
+}
+```
 
 **What was intentionally ignored here:**
 - Daylight Saving Time
