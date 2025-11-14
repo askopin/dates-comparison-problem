@@ -3,9 +3,9 @@
 ## Introduction
 
 A couple of months ago I was at an interview, and as a "homework" I was asked to solve the following problem:
-There is a list of events scattered across the globe, each has its start and end time. Required to build chains of events so that in each chain the next event starts on the same date the previous one ends, and display the result in a fancy way (which is out of scope of the article). Edge cases like overlapping events are also out of scope.
+There is a list of events scattered across the globe, each has its start and end time. The task is to build chains of events so that in each chain the next event starts on the same date the previous one ends, and display the result in a fancy way (which is out of scope of the article). Edge cases like overlapping events are also out of scope.
 
-Sounds simple, but while discussing a solution we struggled to have a common understanding of what it means for two things to happen on the same day. They were wondering what could be wrong with such simple and obvious requirement and I failed my roll to convince them that it's much more complicated than it looks like.
+Sounds simple, but while discussing a solution we struggled to have a common understanding of what it means for two things to happen on the same day. They were wondering what could be wrong with such a simple and obvious requirement and I failed my roll to convince them that it's much more complicated than it looks like.
 
 So, we have a list that looks like this (order is not guaranteed):
 ```
@@ -17,7 +17,7 @@ So, we have a list that looks like this (order is not guaranteed):
   ]
 }
 ```
-and as a result should have something with the following structure
+and the result should have a structure like the following:
 ```
 [
     [
@@ -32,7 +32,7 @@ and as a result should have something with the following structure
 
 ## Naive solution
 
-The most obvious approach (and also the one suggested by the interviewers) is to just compare dates using calendar or compare strings produced using date formatter:
+The most obvious approach (and also the one suggested by the interviewers) is to use a calendar to compare dates or convert dates to strings omitting the time component and compare the result:
 
 ```
 class ChainBuilder {
@@ -63,10 +63,10 @@ class ChainBuilder {
 }
 ```
 
-A huge issue of this solution (or any similar one) is that it uses the current timezone of the user to calculate the result and as the user travels across the world visiting these events, the grouping may change.
+The huge issue of this solution (or any similar one) is that it uses the current timezone of the user to calculate the result and as the user travels across the world visiting these events, the grouping may change.
 ![gif](images/terminal_render.gif)
 
-## Why it behaves so weird
+## Why it behaves so weirdly
 
 Let's assume that we have two events: 
     - Event 1: `{start: 2025-12-31T18:00:00Z, end: 2026-01-01T06:00:00Z}`
@@ -75,16 +75,16 @@ Let's assume that we have two events:
 Then we have the following imaginary timeline, each tick corresponds to six hours:
 ![image](images/timeline.png)
 
-In order to start counting days, we need to put the origin point on the line a.k.a. specify a timezone. Let's assume that our user starts in the UK
+In order to start counting days, we need to put the origin point on the line a.k.a. specify a timezone. Let's assume that our user starts in the UK.
 ![image](images/same_day_case.png)
 
 Then the first event ends at 6AM Jan 1st and the second one starts at 6PM the same day.
-But what if our user lives in New Zealand?
+But what if we consider a user who lives in New Zealand?
 
 ![image](images/different_days_case.png)
 Then the first event ends at 6PM Dec 31st and the second one starts at 6AM Jan 1st, so we should not chain them! 
 
-And what if the first event takes place in London but the second one in Wellington? Should we split the chain while the customer changes flights somewhere in east Asia?
+And what if the first event takes place in London but the second one in Wellington? Should we split the chain while the user changes flights somewhere in east Asia?
 
 ## Conclusion
 
