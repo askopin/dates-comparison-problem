@@ -71,7 +71,7 @@ class DrawTimeline(Scene):
         )
     
         kiwi = SVGMobject("kiwi.svg", fill_color=WHITE, height=0.8).next_to(tick_marks[4], direction = 2.5 * DOWN)
-        au_zone_text = Text("Timezone: +12 GMT", font_size=22).next_to(kiwi, direction=DOWN, aligned_edge=ORIGIN)
+        au_zone_text = Text("Timezone: +12 UTC", font_size=22).next_to(kiwi, direction=DOWN, aligned_edge=ORIGIN)
         au_time_ticks = VGroup(
             *[Text(f"{ (i - 4) * 6 % 24 :02d}:00", font_size=22).next_to(tick_marks[i], direction=DOWN, aligned_edge=ORIGIN) for i in range(1, num_ticks)]
         )
